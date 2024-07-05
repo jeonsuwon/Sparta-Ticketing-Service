@@ -2,6 +2,8 @@ import Joi from 'joi';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { Module } from '@nestjs/common';
+import { User } from './user/entities/user.entity';
+import { Show } from './show/entities/show.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
@@ -19,7 +21,7 @@ const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [],
+    entities: [User,Show],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),

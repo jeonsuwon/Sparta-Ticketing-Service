@@ -1,6 +1,7 @@
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Role } from '../types/userRole.type';
+import { Show } from 'src/show/entities/show.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity({
@@ -30,4 +31,7 @@ export class User {
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
   role: Role;
+
+  // @OneToMany(()=>Show,(show)=> show.user)
+  // show:Show[];
 }

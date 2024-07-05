@@ -12,8 +12,11 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
-  async register(@Body() loginDto: LoginDto) {
-    return await this.userService.register(loginDto.email, loginDto.password);
+    async register(@Body() loginDto: LoginDto) {
+    const {email, password, name, phoneNumber, address} = loginDto
+    const data = await this.userService.register(email, password, name, phoneNumber, address);
+    
+    return data
   }
 
   @Post('login')

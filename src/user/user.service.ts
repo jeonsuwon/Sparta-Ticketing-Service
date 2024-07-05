@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './entities/user.entity';
+import { Role } from './types/userRole.type';
 
 @Injectable()
 export class UserService {
@@ -16,24 +17,28 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string) {
+  async register(email: string, password: string, name: string, phoneNumber: string, address: string) {
     const existingUser = await this.findByEmail(email);
     if (existingUser) {
       throw new ConflictException(
         '이미 해당 이메일로 가입된 사용자가 있습니다!',
       );
     }
-
     const hashedPassword = await hash(password, 10);
-    await this.userRepository.save({
+    const data = {
       email,
       password: hashedPassword,
-    });
+      name,
+      phoneNumber,
+      address
+    }
+    await this.userRepository.save(data);
+    return {...data, password:undefined}
   }
 
   async login(email: string, password: string) {
     const user = await this.userRepository.findOne({
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password','role'],
       where: { email },
     });
     if (_.isNil(user)) {
@@ -44,7 +49,7 @@ export class UserService {
       throw new UnauthorizedException('비밀번호를 확인해주세요.');
     }
 
-    const payload = { email, sub: user.id };
+    const payload = { email, userRole: user.role , userId: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };

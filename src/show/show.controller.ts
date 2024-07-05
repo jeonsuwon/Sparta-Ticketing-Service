@@ -3,44 +3,40 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Role } from 'src/user/types/userRole.type';
 
 import {
-  Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseGuards, UseInterceptors
+  Body, Controller, Delete, Get, Param, Post, Patch, UploadedFile, UseGuards, UseInterceptors
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { UpdateShowDto } from './dto/update.show.dto';
+import { CreateShowDto } from './dto/create.show.dto';
 import { ShowService } from './show.service';
 
-@UseGuards(RolesGuard)
-@Controller('team')
+@Controller('show')
 export class ShowController {
   constructor(private readonly showService: ShowService) {}
 
   @Get()
-  async findAll() {
-    return await this.showService.findAll();
-  }
+    getShow(){
+      const data = this.showService.getShow();
+      return data
+    }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return await this.showService.findOne(id);
-  }
-
-  @Roles(Role.Admin)
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  async create(@UploadedFile() file: Express.Multer.File) {
-    await this.showService.create(file);
-  }
+    createShow(@Body() createShowDto:CreateShowDto) {
+      const {showTitle, showContent, showCategory, showAddress, showDate} = createShowDto;
+      const data = this.showService.createShow(showTitle, showContent, showCategory, showAddress, showDate);
+      return data
+    }
 
-  @Roles(Role.Admin)
-  @Put(':id')
-  async update(@Param('id') id: number, @Body() updateshowDto: UpdateShowDto) {
-    await this.showService.update(id, updateshowDto);
-  }
-
-  @Roles(Role.Admin)
+  @Patch(':id')
+    updateShow(@Param('id') id: number, @Body() updateShowDto:CreateShowDto){
+      const {showTitle, showContent, showCategory, showAddress, showDate} = updateShowDto;
+      const data = this.showService.updateShow(id, showTitle, showContent, showCategory, showAddress, showDate);
+      return data
+    }
+    
   @Delete(':id')
-  async delete(@Param('id') id: number) {
-    await this.showService.delete(id);
-  }
+    DeleteShow(@Param('id') id: number){
+      const data = this.showService.deleteShow(id)
+      if(data) return {message: "정상적으로 삭제되었습니다."}
+    }
 }
