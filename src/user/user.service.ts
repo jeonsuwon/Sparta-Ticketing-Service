@@ -17,7 +17,7 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string, name: string, phoneNumber: string, address: string) {
+  async register(email: string, password: string, name: string, phoneNumber: string, address: string, role: string = Role.USER) {
     const existingUser = await this.findByEmail(email);
     if (existingUser) {
       throw new ConflictException(
@@ -30,8 +30,9 @@ export class UserService {
       password: hashedPassword,
       name,
       phoneNumber,
-      address
-    }
+      address,
+      role: role as Role, // 기존은 role 이였지만 , User에서 정의된 role의 타입이 전달된 role타입과 다르기때문에 에러 발생 ,
+    };
     await this.userRepository.save(data);
     return {...data, password:undefined}
   }
@@ -53,6 +54,10 @@ export class UserService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  checkUser(userPayload: any){
+    return `유저정보: ${JSON.stringify(userPayload)}`;
   }
 
   async findByEmail(email: string) {
