@@ -55,6 +55,11 @@
     configure(consumer: MiddlewareConsumer){
       consumer
       .apply(AuthMiddleware)
-      .forRoutes({path: 'user/check', method: RequestMethod.GET});// user/check 엔드포인트에만 적용?
+      .forRoutes(
+        {path: 'user/check', method: RequestMethod.GET},
+        {path: 'show', method: RequestMethod.POST},
+        {path: 'show', method: RequestMethod.PATCH},
+        {path: 'show', method: RequestMethod.DELETE},
+      );// user/check 엔드포인트에만 적용?
     }
   }
